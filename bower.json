@@ -1,0 +1,17 @@
+{
+  "name": "purescript-typelevel-eval",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-console": "^1.0.0",
+    "purescript-symbols": "^1.0.1",
+    "purescript-proxy": "^1.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^1.0.0"
+  }
+}

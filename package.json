@@ -1,0 +1,9 @@
+{
+  "name": "purescript-typelevel-eval",
+  "version": "1.0.0",
+  "description": "Lambda calculus at the type level",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Liam Goodacre (goodacre.liam@gmail.com)",
+  "license": "MIT"
+}
