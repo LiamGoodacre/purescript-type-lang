@@ -2,7 +2,7 @@ module Main where
 
 import Prelude
 import Type.Proxy (Proxy(..))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol, reifySymbol)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 
@@ -126,7 +126,13 @@ instance evalStr
 instance evalCat
   :: (Eval context l (StrVal left),
       Eval context r (StrVal right))
-  => Eval context (Cat l r) (StrVal (TypeConcat left right))
+  => Eval context (Cat l r) (StrVal (CatSym left right))
+
+-- replacement for `TypeConcat` until that gets an `IsSymbol` instance
+foreign import data CatSym :: Symbol -> Symbol -> Symbol
+instance isSymbolCatSym :: (IsSymbol l, IsSymbol r) => IsSymbol (CatSym l r) where
+  reflectSymbol SProxy =
+    reflectSymbol (SProxy :: SProxy l) <> reflectSymbol (SProxy :: SProxy r)
 
 
 eval :: forall expr output.
@@ -169,6 +175,12 @@ type Y = JoinStrings (Cons (Str "A") (Cons X (Cons HelloWorld Nil)))
 p :: SProxy _
 p = eval (Proxy :: Proxy Y)
 
+helloWorld :: String
+helloWorld = reifySymbol "Hello" (\o -> reifySymbol "World" \t -> one o t) where
+  one :: forall l r. (IsSymbol l, IsSymbol r) => SProxy l -> SProxy r -> String
+  one _ _ = evalString (Proxy :: Proxy (Cat (Str l) (Str r)))
+
+
 main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = do
-  log "Once we have IsSymbol instances, everything will be awesome"
+  log helloWorld
