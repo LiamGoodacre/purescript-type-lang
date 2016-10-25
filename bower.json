@@ -7,6 +7,7 @@
     "output"
   ],
   "dependencies": {
+    "purescript-maybe": "^1.0.0",
     "purescript-console": "^1.0.0",
     "purescript-symbols": "^1.0.1",
     "purescript-proxy": "^1.0.0"
