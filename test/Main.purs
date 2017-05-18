@@ -1,13 +1,12 @@
 module Test.Main where
 
-import Prelude
-import Type.Lang.Types (V0, V1, Lam, App, Typ, Typ1, If, Bool, False, Sym, Cat)
-import Type.Lang.Eval (runType, runString)
-import Type.Proxy (Proxy(..))
-import Data.Symbol (class IsSymbol, SProxy, reifySymbol)
-import Data.Maybe (Maybe(..))
+import Type.Lang.Types
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
+import Data.Maybe (Maybe(..))
+import Prelude (Unit, (+), discard)
+import Type.Lang.Eval (runType, runTypeOn, runString)
+import Type.Proxy (Proxy(..))
 
 -- | Examples
 type Nil = Lam (Lam V0)
@@ -36,16 +35,20 @@ maybe2Proxy3Type :: Proxy (MM (PPP (Typ Unit)))
 maybe2Proxy3Type = Proxy
 
 -- evaluate maybe2Proxy3Type and use the resulting type
-computedType :: _
+computedType :: Maybe (Maybe (Proxy (Proxy (Proxy Unit)))) -> Int
 computedType = runType maybe2Proxy3Type (case _ of
   Nothing -> 0
   Just Nothing -> 1
   Just (Just x) -> 2)
 
 helloWorld :: String
-helloWorld = reifySymbol "Hello" (\o -> reifySymbol "World" \t -> one o t) where
-  one :: forall l r. (IsSymbol l, IsSymbol r) => SProxy l -> SProxy r -> String
-  one _ _ = runString (Proxy :: Proxy (Cat (Sym l) (Sym r)))
+helloWorld = runString (Proxy :: Proxy (Cat (Sym "Hello") (Sym "World")))
+
+exampleRunType :: Int -> Int -> Int
+exampleRunType = runType (Proxy :: Proxy (App (Lam V0) (Typ Int))) (+)
+
+exampleRunTypeOn :: Int -> Int -> Int
+exampleRunTypeOn = runTypeOn (App (Lam v0) (Typ :: Typ Int)) (+)
 
 main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = do

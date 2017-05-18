@@ -1,7 +1,7 @@
 module Type.Lang.Eval where
 
 import Type.Lang.Types
-import Prelude ((<<<), (<>))
+import Prelude ((<<<))
 import Type.Proxy (Proxy(..))
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 
@@ -64,7 +64,7 @@ instance evalCat
   :: (IsContext context,
       Eval context l (SymVal left),
       Eval context r (SymVal right))
-  => Eval context (Cat l r) (SymVal (CatSym left right))
+  => Eval context (Cat l r) (SymVal (TypeConcat left right))
 
 instance evalBool
   :: (IsContext context,
@@ -84,13 +84,6 @@ instance evalIf
   => Eval context (If condition ifTrue ifFalse) output
 
 
--- | A replacement for `TypeConcat` until that gets an `IsSymbol` instance
-foreign import data CatSym :: Symbol -> Symbol -> Symbol
-instance isSymbolCatSym :: (IsSymbol l, IsSymbol r) => IsSymbol (CatSym l r) where
-  reflectSymbol SProxy =
-    reflectSymbol (SProxy :: SProxy l) <> reflectSymbol (SProxy :: SProxy r)
-
-
 -- | Evaluate to a type
 
 class RunType expr output | expr -> output
@@ -99,10 +92,16 @@ instance runTypeEval
   => RunType expr output
 
 runType :: forall expr output r.
-  (IsExpr expr,
-   RunType expr output) =>
+  IsExpr expr =>
+  RunType expr output =>
   Proxy expr -> (output -> r) -> output -> r
 runType Proxy f = f
+
+runTypeOn :: forall expr output r.
+  IsExpr expr =>
+  RunType expr output =>
+  expr -> (output -> r) -> output -> r
+runTypeOn _ f = f
 
 
 -- | Evaluate to a symbol
@@ -113,14 +112,15 @@ instance runSymbolEval
   => RunSymbol expr output
 
 runSymbol :: forall expr output.
-  (IsExpr expr,
-   RunSymbol expr output) =>
+  IsExpr expr =>
+  RunSymbol expr output =>
   Proxy expr -> SProxy output
 runSymbol Proxy = SProxy
 
 runString :: forall expr output.
-  (IsExpr expr,
-   IsSymbol output,
-   RunSymbol expr output) =>
+  IsExpr expr =>
+  IsSymbol output =>
+  RunSymbol expr output =>
   Proxy expr -> String
 runString = reflectSymbol <<< runSymbol
+

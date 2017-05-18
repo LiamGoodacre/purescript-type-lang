@@ -7,12 +7,9 @@
     "output"
   ],
   "dependencies": {
-    "purescript-maybe": "^1.0.0",
-    "purescript-console": "^1.0.0",
-    "purescript-symbols": "^1.0.1",
-    "purescript-proxy": "^1.0.0"
+    "purescript-maybe": "^3.0.0",
+    "purescript-console": "^3.0.0",
+    "purescript-typelevel-prelude": "^2.0.0"
   },
-  "devDependencies": {
-    "purescript-psci-support": "^1.0.0"
-  }
+  "devDependencies": {}
 }
