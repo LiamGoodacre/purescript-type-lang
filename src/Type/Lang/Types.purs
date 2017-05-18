@@ -119,6 +119,20 @@ instance isExprIf
   :: (IsExpr condition, IsExpr ifTrue, IsExpr ifFalse)
   => IsExpr (If condition ifTrue ifFalse)
 
+data EmptyRec = EmptyRec
+instance isExprEmptyRec
+  :: IsExpr EmptyRec
+
+data ConsRec (key :: Type) (val :: Type) (tail :: Type) = ConsRec
+instance isExprConsRec
+  :: IsExpr tail
+  => IsExpr (ConsRec key val tail)
+
+data IndexRec (key :: Type) (rec :: Type) = IndexRec
+instance isExprIndexRec
+  :: IsExpr rec
+  => IsExpr (IndexRec key rec)
+
 
 -- | Values
 -- | Results of evaluating an expression in a context
@@ -145,6 +159,10 @@ instance isValueTyp1Val
 data BoolVal bool = BoolVal bool
 instance isValueBoolVal
   :: IsValue (BoolVal bool)
+
+data RecVal (rec :: # Type) = RecVal (Record rec)
+instance isValueRecVal
+  :: IsValue (RecVal rec)
 
 
 -- | Context

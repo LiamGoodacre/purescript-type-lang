@@ -5,8 +5,9 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Maybe (Maybe(..))
 import Prelude (Unit, (+), discard)
-import Type.Lang.Eval (runType, runTypeOn, runString)
+import Type.Lang.Eval (runType, runTypeOn, runSymbol, runString, runRecordType)
 import Type.Proxy (Proxy(..))
+import Type.Data.Symbol (SProxy)
 
 -- | Examples
 type Nil = Lam (Lam V0)
@@ -50,6 +51,21 @@ exampleRunType = runType (Proxy :: Proxy (App (Lam V0) (Typ Int))) (+)
 exampleRunTypeOn :: Int -> Int -> Int
 exampleRunTypeOn = runTypeOn (App (Lam v0) (Typ :: Typ Int)) (+)
 
+
+type RecordEG = ConsRec (Sym "foo") (Sym "A") (ConsRec (Sym "bar") (Sym "B") EmptyRec)
+type IndexRecordEG = IndexRec (Sym "bar") RecordEG
+
+exampleRunRecordType :: Proxy { foo :: SymVal "A", bar :: SymVal "B" }
+exampleRunRecordType = runRecordType (Proxy :: Proxy RecordEG)
+
+exampleRunRecordIndex :: SProxy "B"
+exampleRunRecordIndex = runSymbol (Proxy :: Proxy IndexRecordEG)
+
+exampleRunRecordIndexString :: String
+exampleRunRecordIndexString = runString (Proxy :: Proxy IndexRecordEG)
+
+
 main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = do
   log helloWorld
+  log exampleRunRecordIndexString

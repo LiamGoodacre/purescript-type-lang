@@ -83,6 +83,25 @@ instance evalIf
       Eval context branch output)
   => Eval context (If condition ifTrue ifFalse) output
 
+instance evalEmptyRec
+  :: IsContext context
+  => Eval context EmptyRec (RecVal ())
+
+instance evalConsRec
+  :: (IsContext context,
+      Eval context keyExpr (SymVal key),
+      Eval context valueExpr value,
+      Eval context tailExpr (RecVal tail),
+      RowCons key value tail out)
+  => Eval context (ConsRec keyExpr valueExpr tailExpr) (RecVal out)
+
+instance evalIndexRec
+  :: (IsContext context,
+      Eval context keyExpr (SymVal key),
+      Eval context recExpr (RecVal rec),
+      RowCons key val rest rec)
+  => Eval context (IndexRec keyExpr recExpr) val
+
 
 -- | Evaluate to a type
 
@@ -123,4 +142,12 @@ runString :: forall expr output.
   RunSymbol expr output =>
   Proxy expr -> String
 runString = reflectSymbol <<< runSymbol
+
+
+-- | Evaluate to a record type
+runRecordType :: forall expr output.
+  IsExpr expr =>
+  Eval Empty expr (RecVal output) =>
+  Proxy expr -> Proxy (Record output)
+runRecordType Proxy = Proxy  
 

@@ -21,6 +21,9 @@ Check at the bottom of [/test/Main.purs](/test/Main.purs) for examples.
 * Application via `App f x`:
   * Type constructors: `App (Typ1 Array) (Typ Int)` to get `Typ (Array Int)`
   * Functions: `App (Lam V0) (Sym "x")` to get `Sym "x"`
+* Empty record via `EmptyRec`
+* Record cons via `ConsRec k v r`
+* Record index via `IndexRec k r`
 
 
 ## Values
@@ -30,3 +33,4 @@ Check at the bottom of [/test/Main.purs](/test/Main.purs) for examples.
 * Types
 * Type constructors
 * Booleans
+* Records
